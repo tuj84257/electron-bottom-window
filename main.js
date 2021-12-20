@@ -1,3 +1,4 @@
+const { app, screen } = require('electron');
 const ref = require('ref-napi');
 const StructType = require('ref-struct-di')(ref);
 const { HWND_BOTTOM, SWP_NOSIZE, SWP_NOMOVE, SWP_NOZORDER, SWP_SHOWWINDOW, SetWindowPos } = require('win-setwindowpos');
@@ -32,21 +33,36 @@ const preventZOrderChange = window => {
 };
 
 /**
- * Positions the given window to the bottom of the z-index stack.
+ * Positions and sticks the given window to the bottom of the z-index stack.
  * @param {Electron.BrowserWindow} window - the BrowserWindow object
  * @param {number} screenScaleFactor - the scale factor of the screen
  */
-const sendWindowToBottom = (window, screenScaleFactor) => {
-    const windowBounds = window.getBounds();
-    const windowWidth = windowBounds.width * screenScaleFactor;
-    const windowHeight = windowBounds.height * screenScaleFactor;
-    const windowX = windowBounds.x;
-    const windowY  = windowBounds.y;
-    const windowHandle = window.getNativeWindowHandle();
-    SetWindowPos(windowHandle, HWND_BOTTOM, windowX, windowY, windowWidth, windowHeight, SWP_SHOWWINDOW);
-	preventZOrderChange(window);
+const stickToBottom = window => {
+	if(app.isReady()) {
+		try {
+			const windowBounds = window.getBounds();
+			const windowX = windowBounds.x;
+			const windowY  = windowBounds.y;
+			const whichScreen = screen.getDisplayNearestPoint({ x: windowX, y: windowY });
+			const screenScaleFactor = whichScreen.scaleFactor;
+			const windowWidth = windowBounds.width * screenScaleFactor;
+			const windowHeight = windowBounds.height * screenScaleFactor;
+			const windowHandle = window.getNativeWindowHandle();
+			SetWindowPos(windowHandle, HWND_BOTTOM, windowX, windowY, windowWidth, windowHeight, SWP_SHOWWINDOW);
+			preventZOrderChange(window);
+		} catch (error) {
+			console.log('\x1b[31m');
+			console.trace(error);
+			console.log('\x1b[0m');
+		}
+	}
+	else {
+		console.log('\x1b[31m');
+		console.trace('ERROR: stickToBottom() should be called after your electron app is ready.');
+		console.log('\x1b[0m');
+	}
 }
 
 module.exports = {
-    sendWindowToBottom
+    stickToBottom
 };
