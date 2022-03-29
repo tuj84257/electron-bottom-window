@@ -1,4 +1,4 @@
-const { app, screen } = require('electron');
+const { app, screen, BrowserWindow } = require('electron');
 const ref = require('ref-napi');
 const StructType = require('ref-struct-di')(ref);
 const { HWND_BOTTOM, SWP_NOSIZE, SWP_NOMOVE, SWP_NOZORDER, SWP_SHOWWINDOW, SetWindowPos } = require('win-setwindowpos');
@@ -13,11 +13,16 @@ const WINDOWPOS = StructType({
 	flags: ref.types.uint32,
 });
 
+/** 
+ * This message is sent to a window whose size,
+ * position, or place in the Z order is about to change 
+ * as a result of call to the `SetWindowPos` function.
+ */
 const WM_WINDOWPOSCHANGING = 0x0046;
 
 /**
  * Prevents the change of the z-index of the window.
- * @param {BrowserWindow} window The browser window
+ * @param { BrowserWindow } window The browser window
  */
 const preventZOrderChange = window => {
 	window.hookWindowMessage(WM_WINDOWPOSCHANGING, (wParam, lParam)=> {
@@ -34,8 +39,7 @@ const preventZOrderChange = window => {
 
 /**
  * Positions and sticks the given window to the bottom of the z-index stack.
- * @param {Electron.BrowserWindow} window - the BrowserWindow object
- * @param {number} screenScaleFactor - the scale factor of the screen
+ * @param { BrowserWindow } window - the BrowserWindow object
  */
 const stickToBottom = window => {
 	if(app.isReady()) {
