@@ -2,6 +2,12 @@
 
 An Electron module that allows you to stick the browser window to the bottom of the z-index stack.
 
+## Installation
+
+```
+npm install electron-bottom-window
+```
+
 ## Usage
 
 ```javascript

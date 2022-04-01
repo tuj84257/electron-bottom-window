@@ -21,23 +21,6 @@ const WINDOWPOS = StructType({
 const WM_WINDOWPOSCHANGING = 0x0046;
 
 /**
- * Prevents the change of the z-index of the window.
- * @param { BrowserWindow } window The browser window
- */
-const preventZOrderChange = window => {
-	window.hookWindowMessage(WM_WINDOWPOSCHANGING, (wParam, lParam)=> {
-		const buffer = Buffer.alloc(8);
-		buffer.type = ref.refType(WINDOWPOS);
-		lParam.copy(buffer);
-		const actualStructDataBuffer = buffer.deref();
-		const windowPos = actualStructDataBuffer.deref();
-		const newFlags = windowPos.flags | SWP_NOZORDER | SWP_NOMOVE | SWP_NOSIZE;
-		actualStructDataBuffer.writeUInt32LE(newFlags, 6);
-		actualStructDataBuffer.writeUInt32LE(HWND_BOTTOM, 1);
-  	});
-};
-
-/**
  * Positions and sticks the given window to the bottom of the z-index stack.
  * @param { BrowserWindow } window - the BrowserWindow object
  */
@@ -53,7 +36,17 @@ const stickToBottom = window => {
 			const windowHeight = windowBounds.height * screenScaleFactor;
 			const windowHandle = window.getNativeWindowHandle();
 			SetWindowPos(windowHandle, HWND_BOTTOM, windowX, windowY, windowWidth, windowHeight, SWP_SHOWWINDOW);
-			preventZOrderChange(window);
+			// Prevent the change of the z-index of the window.
+			window.hookWindowMessage(WM_WINDOWPOSCHANGING, (wParam, lParam) => {
+				const buffer = Buffer.alloc(8);
+				buffer.type = ref.refType(WINDOWPOS);
+				lParam.copy(buffer);
+				const actualStructDataBuffer = buffer.deref();
+				const windowPos = actualStructDataBuffer.deref();
+				const newFlags = windowPos.flags | SWP_NOZORDER | SWP_NOMOVE | SWP_NOSIZE;
+				actualStructDataBuffer.writeUInt32LE(newFlags, 6);
+				actualStructDataBuffer.writeUInt32LE(HWND_BOTTOM, 1);
+			});
 		} catch (error) {
 			console.log('\x1b[31m');
 			console.trace(error);
