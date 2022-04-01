@@ -4,7 +4,7 @@ An Electron module that allows you to stick the browser window to the bottom of 
 
 ## Installation
 
-```
+```javascript
 npm install electron-bottom-window
 ```
 
