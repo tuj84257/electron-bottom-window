@@ -1,6 +1,6 @@
 {
 	"name": "electron-bottom-window",
-	"version": "1.0.0",
+	"version": "1.0.3",
 	"description": "An electron module that allows you to send the browser window to the bottom of the z-index stack.",
 	"main": "main.js",
 	"scripts": {
