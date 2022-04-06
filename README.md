@@ -1,6 +1,6 @@
 # electron-bottom-window
 
-<img src="https://img.shields.io/npm/dt/electron-bottom-window?color=orange&logo=npm&style=for-the-badge">    <img src="https://img.shields.io/npm/l/electron-bottom-window?style=for-the-badge">
+<img src="https://img.shields.io/npm/dt/electron-bottom-window?color=orange&logo=npm&style=for-the-badge">    <img src="https://img.shields.io/npm/l/electron-bottom-window?style=for-the-badge">    <img src="https://img.shields.io/badge/platform-windows-blue?style=for-the-badge&logo=windows">
 
 An Electron module that allows you to stick the browser window to the bottom of the z-index stack.
 
